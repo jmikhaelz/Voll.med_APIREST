@@ -1,6 +1,6 @@
 package med.voll.api.model.patient;
 
-import med.voll.api.model.DataAddress;
+import med.voll.api.model.person.DataAddress;
 /*
  * DTO Registro de Paciente/Cliente
  */
