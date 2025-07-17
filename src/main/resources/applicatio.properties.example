@@ -1,0 +1,13 @@
+##ARCHIVO DE EJEMPLO DE PROPIEDADES DEL PROYECTO PARA LA CONEXION DE DB - MYSQL
+spring.application.name=api
+
+spring.jpa.hibernate.ddl-auto=update
+
+spring.datasource.url=jdbc:mysql://localhost:{port}/vollmed_api
+spring.datasource.username=username
+spring.datasource.password=password
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+spring.jpa.show-sql=true
+spring.jpa.format-sql=true
