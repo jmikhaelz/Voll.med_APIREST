@@ -14,14 +14,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import med.voll.api.model.person.Address;
 
-/*  Metodos Lombok */
+@Table(name = "medicos")
+@Entity(name = "Medico")
+/* Metodos Lombok */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-
-@Table(name = "medicos")
-@Entity(name = "Medico")
 public class Medical {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +34,15 @@ public class Medical {
     /* Incrutacion dentro de una entidad para @Embeddable */
     @Embedded
     private Address direccion;
+
+    public Medical(DataMedical data) {
+        this.id = null;
+        this.nombre = data.nombre();
+        this.email = data.email();
+        this.telefono = data.telefono();
+        this.documento = data.documento();
+        this.especialidad = data.especialidad();
+        this.direccion = new Address(data.direccion());
+    }
+
 }

@@ -10,17 +10,17 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import med.voll.api.model.person.DataAddress;
+import med.voll.api.model.person.Address;
 
-/*  Metodos Lombok */
+@Table(name = "pacientes")
+@Entity(name = "Paciente")
+
+/* Metodos Lombok */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 
-
-@Table(name = "pacientes")
-@Entity(name = "Paciente")
 public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,5 +31,15 @@ public class Patient {
     private String documento_identidad;
     /* Incrutacion dentro de una entidad para @Embeddable */
     @Embedded
-    private DataAddress direccion;
+    private Address direccion;
+
+    public Patient(DataPatient data) {
+        this.id = null;
+        this.nombre = data.nombre();
+        this.email = data.email();
+        this.telefono = data.telefono();
+        this.documento_identidad = data.documento_identidad();
+        this.direccion = new Address(data.direccion());
+    }
+
 }
