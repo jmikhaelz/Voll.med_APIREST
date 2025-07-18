@@ -5,7 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +48,7 @@ public class MedicalController {
     @GetMapping
     public PagedModel<EntityModel<DataListMedical>> getList(
             @PageableDefault(size = 10, sort = { "nombre" }) Pageable paginacion) {
-        Page<DataListMedical> pagina = respository.findAll(paginacion)
+        Page<DataListMedical> pagina = respository.findAllByEstatusTrue(paginacion)
                 .map(m -> new DataListMedical(
                         m.getId(),
                         m.getNombre(),
@@ -66,5 +68,12 @@ public class MedicalController {
     public void update(@RequestBody @Valid DataUpdateMedical data) {
         var id_med = respository.getReferenceById(data.id());
         id_med.update(data);
+    }
+
+    @Transactional
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id){
+        var medical_rep = respository.getReferenceById(id);
+        medical_rep.disableStatus();
     }
 }

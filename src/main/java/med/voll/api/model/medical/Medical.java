@@ -26,6 +26,7 @@ public class Medical {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Boolean estatus;
     private String nombre;
     private String email;
     private String telefono;
@@ -38,6 +39,7 @@ public class Medical {
 
     public Medical(DataMedical data) {
         this.id = null;
+        this.estatus = true;
         this.nombre = data.nombre();
         this.email = data.email();
         this.telefono = data.telefono();
@@ -65,5 +67,9 @@ public class Medical {
             }
             this.direccion.update(data.direccion());
         }
+    }
+
+    public void disableStatus() {
+        this.estatus = false;
     }
 }
