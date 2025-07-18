@@ -7,6 +7,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +18,7 @@ import med.voll.api.model.medical.DataListMedicalModelAssembler;
 import med.voll.api.model.medical.DataMedical;
 import med.voll.api.model.medical.Medical;
 import med.voll.api.repository.MedicalResp;
+import med.voll.api.model.medical.DataUpdateMedical;
 //En la seccion de imports:
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
@@ -46,6 +48,7 @@ public class MedicalController {
             @PageableDefault(size = 10, sort = { "nombre" }) Pageable paginacion) {
         Page<DataListMedical> pagina = respository.findAll(paginacion)
                 .map(m -> new DataListMedical(
+                        m.getId(),
                         m.getNombre(),
                         m.getEmail(),
                         m.getDocumento(),
@@ -56,5 +59,12 @@ public class MedicalController {
         // EntityModel, proporcionando una estructura JSON estable y permitiendo añadir
         // links adicionales.
         return pagedResourcesAssembler.toModel(pagina, DataListMedicalModelAssembler);
+    }
+
+    @Transactional
+    @PutMapping
+    public void update(@RequestBody @Valid DataUpdateMedical data) {
+        var id_med = respository.getReferenceById(data.id());
+        id_med.update(data);
     }
 }

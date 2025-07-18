@@ -14,6 +14,7 @@ public class DataListMedicalModelAssembler
     // EntityModel,
     // que es una representación envolvente que proporciona una estructura estable
     // para el JSON y puede incluir links adicionales.
+    @SuppressWarnings("null")
     @Override
     @NonNull
     public EntityModel<DataListMedical> toModel(@NonNull DataListMedical medicalData) {

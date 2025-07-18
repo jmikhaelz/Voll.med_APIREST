@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -45,4 +46,24 @@ public class Medical {
         this.direccion = new Address(data.direccion());
     }
 
+    public void update(@Valid DataUpdateMedical data) {
+        if (data == null)
+            return;
+
+        if (data.nombre() != null && !data.nombre().isBlank()) {
+            this.nombre = data.nombre();
+        }
+
+        if (data.telefono() != null && !data.telefono().isBlank()) {
+            this.telefono = data.telefono();
+        }
+
+        if (data.direccion() != null) {
+            if (this.direccion == null) {
+                // Si this.direccion aún no ha sido inicializado, podrías hacerlo aquí
+                this.direccion = new Address(); // ajusta según tu clase real
+            }
+            this.direccion.update(data.direccion());
+        }
+    }
 }
