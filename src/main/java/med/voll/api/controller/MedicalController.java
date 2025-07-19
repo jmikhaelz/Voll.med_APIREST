@@ -21,7 +21,7 @@ import med.voll.api.model.medical.DataMedical;
 import med.voll.api.model.medical.Medical;
 import med.voll.api.repository.MedicalResp;
 import med.voll.api.model.medical.DataUpdateMedical;
-//En la seccion de imports:
+
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
