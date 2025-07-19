@@ -25,6 +25,7 @@ public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Boolean estatus;
     private String nombre;
     private String email;
     private String telefono;
@@ -35,11 +36,34 @@ public class Patient {
 
     public Patient(DataPatient data) {
         this.id = null;
+        this.estatus = true;
         this.nombre = data.nombre();
         this.email = data.email();
         this.telefono = data.telefono();
         this.documento_identidad = data.documento_identidad();
         this.direccion = new Address(data.direccion());
+    }
+
+    public void disableStatus() {
+        this.estatus = false;
+    }
+
+    public void actualizarInformacion(DataUpdatePatient data) {
+        if (data == null)
+            return;
+
+        if (data.nombre() != null && !data.nombre().isBlank())
+            this.nombre = data.nombre();
+
+        if (data.telefono() != null && !data.telefono().isBlank())
+            this.telefono = data.telefono();
+
+        if (data.direccion() != null) {
+            if (this.direccion == null) {
+                this.direccion = new Address();
+            }
+            this.direccion.update(data.direccion());
+        }
     }
 
 }
