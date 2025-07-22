@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.validation.Valid;
 import med.voll.api.model.medical.DataListMedical;
@@ -25,6 +26,7 @@ import med.voll.api.model.medical.DataUpdateMedical;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/medicos")
@@ -41,12 +43,27 @@ public class MedicalController {
 
     @Transactional
     @PostMapping
-    public void set(@RequestBody @Valid DataMedical data) {
-        respository.save(new Medical(data));
+    public ResponseEntity<Object> set(@RequestBody @Valid DataMedical data, UriComponentsBuilder uri) {
+        var medical = new Medical(data);
+        respository.save(medical);
+
+        var location = uri.path("/medicos/{id}")
+                        .buildAndExpand(medical.getId())
+                        .toUri();
+
+        return ResponseEntity.created(location).body(
+            new DataListMedical(
+                medical.getId(),
+                medical.getNombre(),
+                medical.getEmail(),
+                medical.getDocumento(),
+                medical.getEspecialidad()
+            )
+        );
     }
 
-    @GetMapping
-    public PagedModel<EntityModel<DataListMedical>> getList(
+    @GetMapping("")
+    public ResponseEntity<PagedModel<EntityModel<DataListMedical>>> getList(
             @PageableDefault(size = 10, sort = { "nombre" }) Pageable paginacion) {
         Page<DataListMedical> pagina = respository.findAllByEstatusTrue(paginacion)
                 .map(m -> new DataListMedical(
@@ -60,20 +77,39 @@ public class MedicalController {
         // Esto garantiza que cada objeto DataListMedical sea envuelto en un
         // EntityModel, proporcionando una estructura JSON estable y permitiendo añadir
         // links adicionales.
-        return pagedResourcesAssembler.toModel(pagina, DataListMedicalModelAssembler);
+        var page = pagedResourcesAssembler.toModel(pagina, DataListMedicalModelAssembler);
+        return ResponseEntity.ok(page);
     }
 
     @Transactional
     @PutMapping
-    public void update(@RequestBody @Valid DataUpdateMedical data) {
+    public ResponseEntity<Object> update(@RequestBody @Valid DataUpdateMedical data) {
         var id_med = respository.getReferenceById(data.id());
         id_med.update(data);
+        return ResponseEntity.ok(new DataListMedical(
+                id_med.getId(),
+                id_med.getNombre(),
+                id_med.getEmail(),
+                id_med.getDocumento(),
+                id_med.getEspecialidad()));
     }
 
     @Transactional
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id){
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
         var medical_rep = respository.getReferenceById(id);
         medical_rep.disableStatus();
+        return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> about(@PathVariable Long id) {
+        var id_med = respository.getReferenceById(id);
+        return ResponseEntity.ok(new DataListMedical(
+                        id_med.getId(),
+                        id_med.getNombre(),
+                        id_med.getEmail(),
+                        id_med.getDocumento(),
+                        id_med.getEspecialidad()));
     }
 }
