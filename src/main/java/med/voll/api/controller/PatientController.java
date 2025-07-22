@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.validation.Valid;
 import med.voll.api.model.patient.DataListPatient;
@@ -25,6 +26,7 @@ import med.voll.api.repository.PatientResp;
 
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/pacientes")
@@ -38,11 +40,23 @@ public class PatientController {
 
     @Transactional
     @PostMapping
-    public void set(@RequestBody @Valid DataPatient data) {
+    public ResponseEntity<Object> set(@RequestBody @Valid DataPatient data, UriComponentsBuilder uri) {
+        var patient = new Patient(data);
         respository.save(new Patient(data));
+
+        var location = uri.path("/pacientes/{id}")
+                .buildAndExpand(patient.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(
+                new DataListPatient(
+                        patient.getId(),
+                        patient.getNombre(),
+                        patient.getEmail(),
+                        patient.getTelefono(),
+                        patient.getDocumento_identidad()));
     }
 
-    @GetMapping
+    @GetMapping("")
     public PagedModel<EntityModel<DataListPatient>> getList(
             @PageableDefault(page = 0, size = 10, sort = { "nombre" }) Pageable paginacion) {
         Page<DataListPatient> pagina = respository.findAllByEstatusTrue(paginacion)
@@ -57,9 +71,16 @@ public class PatientController {
 
     @PutMapping
     @Transactional
-    public void atualizar(@RequestBody @Valid DataUpdatePatient data) {
+    public ResponseEntity<Object> atualizar(@RequestBody @Valid DataUpdatePatient data) {
         var id_patient = respository.getReferenceById(data.id());
         id_patient.actualizarInformacion(data);
+        return ResponseEntity.ok(
+                new DataListPatient(
+                        id_patient.getId(),
+                        id_patient.getNombre(),
+                        id_patient.getEmail(),
+                        id_patient.getTelefono(),
+                        id_patient.getDocumento_identidad()));
     }
 
     @DeleteMapping("/{id}")
@@ -69,4 +90,15 @@ public class PatientController {
         paciente.disableStatus();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> about(@PathVariable Long id) {
+        var paciente = respository.getReferenceById(id);
+        return ResponseEntity.ok(
+                new DataListPatient(
+                        paciente.getId(),
+                        paciente.getNombre(),
+                        paciente.getEmail(),
+                        paciente.getTelefono(),
+                        paciente.getDocumento_identidad()));
+    }
 }
