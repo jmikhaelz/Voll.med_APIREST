@@ -34,11 +34,9 @@ public class MedicalController {
     @Autowired
     private MedicalResp respository;
 
-    // Dentro de MedicoController
-    @Autowired // PagedResourcesAssembler se usa para convertir una Page en un PagedModel.
+    @Autowired
     private PagedResourcesAssembler<DataListMedical> pagedResourcesAssembler;
-    @Autowired // Inyectamos nuestro DataListMedicalModelAssembler para convertir
-               // DataListMedical en EntityModel.
+    @Autowired
     private DataListMedicalModelAssembler DataListMedicalModelAssembler;
 
     @Transactional
@@ -48,18 +46,16 @@ public class MedicalController {
         respository.save(medical);
 
         var location = uri.path("/medicos/{id}")
-                        .buildAndExpand(medical.getId())
-                        .toUri();
+                .buildAndExpand(medical.getId())
+                .toUri();
 
         return ResponseEntity.created(location).body(
-            new DataListMedical(
-                medical.getId(),
-                medical.getNombre(),
-                medical.getEmail(),
-                medical.getDocumento(),
-                medical.getEspecialidad()
-            )
-        );
+                new DataListMedical(
+                        medical.getId(),
+                        medical.getNombre(),
+                        medical.getEmail(),
+                        medical.getDocumento(),
+                        medical.getEspecialidad()));
     }
 
     @GetMapping("")
@@ -72,11 +68,6 @@ public class MedicalController {
                         m.getEmail(),
                         m.getDocumento(),
                         m.getEspecialidad()));
-        // Usamos el pagedResourcesAssembler y el DataListMedicalModelAssembler para
-        // convertir la Page en un PagedModel.
-        // Esto garantiza que cada objeto DataListMedical sea envuelto en un
-        // EntityModel, proporcionando una estructura JSON estable y permitiendo añadir
-        // links adicionales.
         var page = pagedResourcesAssembler.toModel(pagina, DataListMedicalModelAssembler);
         return ResponseEntity.ok(page);
     }
@@ -101,15 +92,15 @@ public class MedicalController {
         medical_rep.disableStatus();
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> about(@PathVariable Long id) {
         var id_med = respository.getReferenceById(id);
         return ResponseEntity.ok(new DataListMedical(
-                        id_med.getId(),
-                        id_med.getNombre(),
-                        id_med.getEmail(),
-                        id_med.getDocumento(),
-                        id_med.getEspecialidad()));
+                id_med.getId(),
+                id_med.getNombre(),
+                id_med.getEmail(),
+                id_med.getDocumento(),
+                id_med.getEspecialidad()));
     }
 }
