@@ -39,4 +39,19 @@ public class TokenService {
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-06:00"));
     }
 
+    public String getSubject(String tokenJWT) {
+        try {
+            var algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                    .withIssuer(author)
+                    .build()
+                    .verify(tokenJWT)
+                    .getSubject();
+
+        } catch (Exception e) {
+            throw new RuntimeException("[TOKEN JWT] : Invalido o expirado");
+        }
+    }
+    
+
 }
