@@ -9,5 +9,12 @@ spring.datasource.password=password
 
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
+
 spring.jpa.show-sql=true
 spring.jpa.format-sql=true
+
+#No mandar error de progrma en HTTP 
+server.error.include-stacktrace=never
+
+api.security.token.secret=${JWT_SECRET:value}
+api.security.token.author=${JWT_AUTHOR:value}
