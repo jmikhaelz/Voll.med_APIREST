@@ -19,21 +19,26 @@ import med.voll.api.model.person.User;
 @RequestMapping("/login")
 public class UserController {
 
-    @Autowired
-    private AuthenticationManager manager;
+        @Autowired
+        private AuthenticationManager manager;
 
-    @Autowired
-    private TokenService tokenService;
+        @Autowired
+        private TokenService tokenService;
 
-    @PostMapping
-    public ResponseEntity<Object> initSession(@RequestBody @Valid DataAutowired data) {
-        var token = new UsernamePasswordAuthenticationToken(
-                data.login(),
-                data.psw());
-        var authentication = manager.authenticate(token);
-        var tokenJWT = tokenService.createToken(
-                (User) authentication.getPrincipal());
-        return ResponseEntity.ok(new DataTokenJWT(
-                tokenJWT));
-    }
+        @PostMapping
+        public ResponseEntity<Object> initSession(@RequestBody @Valid DataAutowired data) {
+                try {
+                        var token = new UsernamePasswordAuthenticationToken(
+                                        data.login(),
+                                        data.psw());
+                        var authentication = manager.authenticate(token);
+                        var tokenJWT = tokenService.createToken(
+                                        (User) authentication.getPrincipal());
+                        return ResponseEntity.ok(new DataTokenJWT(
+                                        tokenJWT));
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return ResponseEntity.badRequest().body(e.getMessage());
+                }
+        }
 }
